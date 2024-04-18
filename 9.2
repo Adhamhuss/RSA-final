@@ -261,7 +261,108 @@
 # print(f"Original Message: {message}")
 # print(f"Encrypted Message: {encrypted_message}")
 # print(f"Decrypted Message: {decrypted_message}")
-# print (pr)
+
+
+
+
+# import random
+# import math
+
+# def generate_rsa_keys(bit_length=16):
+#     p = int(input("Enter a prime number for p: "))
+#     q = int(input("Enter a prime number for q: "))
+#     n = p * q
+#     eul = (p - 1) * (q - 1)
+#     e = auto_generated_public_exponent(eul)
+#     d = modular_inverse(e, eul)
+#     public_key = (e, n)
+#     private_key = (d, n)
+#     return public_key, private_key
+
+# def generate_prime_number(bit_length):
+#     while True:
+#         candidate = random.getrandbits(bit_length)
+#         if is_prime(candidate):
+#             return candidate
+
+# def is_prime(n, k=5):
+#     if n <= 1:
+#         return False
+#     if n <= 3:
+#         return True
+#     if n % 2 == 0:
+#         return False
+
+#     r = 0
+#     d = n - 1
+#     while d % 2 == 0:
+#         d //= 2
+#         r += 1
+
+#     for _ in range(k):
+#         a = random.randrange(2, n - 1)
+#         x = pow(a, d, n)
+#         if x == 1 or x == n - 1:
+#             continue
+#         for _ in range(r - 1):
+#             x = pow(x, 2, n)
+#             if x == n - 1:
+#                 break
+#         else:
+#             return False
+#     return True
+
+# def auto_generated_public_exponent(eul):
+#     e = random.randrange(2, eul)
+#     while math.gcd(e, eul) != 1:
+#         e = random.randrange(2, eul)
+#     return e
+
+# def modular_inverse(e, eul):
+#     gcd, x, _ = extend_gcd(e, eul)
+#     if gcd == 1:
+#         return x % eul
+#     else:
+#         raise ValueError("No modular inverse exists")
+
+# def extend_gcd(a, b):
+#     s0, s1, t0, t1 = 1, 0, 0, 1
+#     while b:
+#         q, a, b = a // b, b, a % b
+#         s0, s1 = s1, s0 - q * s1
+#         t0, t1 = t1, t0 - q * t1
+#     return a, s0, t0
+
+# def encrypt(public_key, plaintext):
+#     e, n = public_key
+#     if plaintext >= n:
+#         raise ValueError("Message is too large for given public key.")
+#     ciphertext = pow(plaintext, e, n)
+#     return ciphertext
+
+# def decrypt(private_key, ciphertext):
+#     d, n = private_key
+#     plaintext = pow(ciphertext, d, n)
+#     return plaintext
+
+# message = int(input("Enter a message to encrypt (as an integer): "))
+
+# public_key, private_key = generate_rsa_keys(bit_length=16)
+
+# try:
+#     encrypted_message = encrypt(public_key, message)
+#     decrypted_message = decrypt(private_key, encrypted_message)
+#     print(f"Original Message: {message}")
+#     print(f"Encrypted Message: {encrypted_message}")
+#     print(f"Decrypted Message: {decrypted_message}")
+# except ValueError as err:
+#     print(err)
+
+
+
+
+
+
 
 
 
@@ -269,17 +370,26 @@ import random
 import math
 
 def generate_rsa_keys(bit_length=16):
-    p = int(input("Enter a prime number for p: "))
-    q = int(input("Enter a prime number for q: "))
+    p = get_prime_input("p")
+    q = get_prime_input("q")
     n = p * q
     eul = (p - 1) * (q - 1)
     e = auto_generated_public_exponent(eul)
     d = modular_inverse(e, eul)
     public_key = (e, n)
     private_key = (d, n)
-    print(f"Public Key: {public_key}")
-    print(f"Private Key: {private_key}")
     return public_key, private_key
+
+def get_prime_input(prime_name):
+    while True:
+        try:
+            prime = int(input(f"Enter a prime number for {prime_name}: "))
+            if is_prime(prime):
+                return prime
+            else:
+                print(f"{prime} is not a prime number. Please enter a prime number.")
+        except ValueError:
+            print("Invalid input. Please enter a valid integer.")
 
 def generate_prime_number(bit_length):
     while True:
@@ -337,6 +447,8 @@ def extend_gcd(a, b):
 
 def encrypt(public_key, plaintext):
     e, n = public_key
+    if plaintext >= n:
+        raise ValueError("Message is too large for given public key.")
     ciphertext = pow(plaintext, e, n)
     return ciphertext
 
@@ -349,9 +461,11 @@ message = int(input("Enter a message to encrypt (as an integer): "))
 
 public_key, private_key = generate_rsa_keys(bit_length=16)
 
-encrypted_message = encrypt(public_key, message)
-decrypted_message = decrypt(private_key, encrypted_message)
-
-print(f"Original Message: {message}")
-print(f"Encrypted Message: {encrypted_message}")
-print(f"Decrypted Message: {decrypted_message}")
+try:
+    encrypted_message = encrypt(public_key, message)
+    decrypted_message = decrypt(private_key, encrypted_message)
+    print(f"Original Message: {message}")
+    print(f"Encrypted Message: {encrypted_message}")
+    print(f"Decrypted Message: {decrypted_message}")
+except ValueError as err:
+    print(err)
