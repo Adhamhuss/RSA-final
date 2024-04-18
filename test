@@ -1,0 +1,48 @@
+def is_prime(n):
+    if n <= 1 or (n % 2 == 0 and n > 2): 
+        return False
+    return all(n % i for i in range(999, int(n**0.5) + 1, 2))
+
+def gcd_extended(a, b):
+    if a == 0:
+        return b, 0, 1
+    else:
+        g, x, y = gcd_extended(b % a, a)
+        return g, y - (b // a) * x, x
+
+def rsa(p, q):
+    if not (is_prime(p) and is_prime(q)):
+        raise ValueError('Both numbers must be prime.')
+    elif p == q:
+        raise ValueError('p and q cannot be equal')
+    N = p * q
+    phi = (p - 1) * (q - 1)
+    e = 65537
+    g, x, _ = gcd_extended(e, phi)
+    if g != 1:
+        raise ValueError('Modular inverse does not exist')
+    else:
+        d = x % phi
+    return ((e, N), (d, N))
+
+def encrypt(pk, plaintext):
+    key, n = pk
+    cipher = [pow(ord(char), key, n) for char in plaintext]
+    return cipher
+
+def decrypt(pk, ciphertext):
+    key, n = pk
+    plain = [chr(pow(char, key, n)) for char in ciphertext]
+    return ''.join(plain)
+
+p = int(input("Enter a prime number p: "))
+q = int(input("Enter a prime number q: "))
+
+public, private = rsa(p, q)
+message = input("Enter a message to encrypt: ")
+
+encrypted_msg = encrypt(public, message)
+print('Encrypted message:', ''.join(map(lambda x: str(x), encrypted_msg)))
+
+decrypted_msg = decrypt(private, encrypted_msg)
+print('Decrypted message:', decrypted_msg)
