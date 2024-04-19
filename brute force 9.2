@@ -25,12 +25,17 @@ def get_prime_input(prime_name, max_value):
             print("Invalid input. Please enter a valid integer.")
 
 def brute_force_d(e, eul):
+    start_time = time.perf_counter()
     d = 1
     while True:
         if (d * e) % eul == 1:
             print(f"Private exponent: {d}")
+            print(f"Time taken to do the brute force: {elapsed_time} milliseconds")
             return d
         d += 1
+        end_time = time.perf_counter()
+        elapsed_time = (end_time - start_time) * 1000  # convert to milliseconds
+        # print(f"Time taken to do the brute force: {elapsed_time} milliseconds")
 
 def generate_rsa_keys(bit_length):
     if bit_length == 8:
