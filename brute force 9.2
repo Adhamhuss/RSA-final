@@ -1,4 +1,3 @@
-
 import time
 import random
 import math
@@ -25,6 +24,13 @@ def get_prime_input(prime_name, max_value):
         except ValueError:
             print("Invalid input. Please enter a valid integer.")
 
+def brute_force_d(e, eul):
+    d = 1
+    while True:
+        if (d * e) % eul == 1:
+            print(f"Private exponent: {d}")
+            return d
+        d += 1
 
 def generate_rsa_keys(bit_length):
     if bit_length == 8:
@@ -45,6 +51,7 @@ def generate_rsa_keys(bit_length):
     eul = (p - 1) * (q - 1)
     e = auto_generated_public_exponent(eul)
     d = modular_inverse(e, eul)
+    d = brute_force_d(e , eul)
     public_key = (e, n)
     private_key = (d, n)
     return public_key, private_key
@@ -87,6 +94,7 @@ def auto_generated_public_exponent(eul):
     while math.gcd(e, eul) != 1:
         e = random.randrange(2, eul)
     return e
+
 
 
 
