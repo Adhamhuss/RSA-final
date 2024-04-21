@@ -3,6 +3,7 @@ import time
 import random
 import math
 
+# Function to prompt the user for the desired bit length for RSA keys.
 def get_bit_length():
     while True:
         try:
@@ -14,6 +15,9 @@ def get_bit_length():
         except ValueError:
             print("Invalid input. Please enter a valid integer.")
 
+
+# Function to prompt the user to enter a prime number within a specified range.
+            
 def get_prime_input(prime_name, max_value):
     while True:
         try:
@@ -24,7 +28,7 @@ def get_prime_input(prime_name, max_value):
                 print(f"Invalid input. {prime_name} should be a prime number less than or equal to {max_value}.")
         except ValueError:
             print("Invalid input. Please enter a valid integer.")
-
+#  max_value (int): The maximum allowed value for the prime number.
 
 def generate_rsa_keys(bit_length):
     if bit_length == 8:
@@ -41,13 +45,19 @@ def generate_rsa_keys(bit_length):
         else:
             print("The product of p and q exceeds the maximum allowed value. Please choose smaller primes.")
 
+    # Computing the product of the two prime numbers to obtain the modulus N
     n = p * q
+
+    # Computing Euler's totient function (ϕ(n)) using the formula (p - 1) * (q - 1)
     eul = (p - 1) * (q - 1)
     e = auto_generated_public_exponent(eul)
+
+    # the private exponent 'd' using the modular inverse function
     d = modular_inverse(e, eul)
     public_key = (e, n)
     private_key = (d, n)
     return public_key, private_key
+
 
 def generate_prime_number(bit_length):
     while True:
@@ -60,6 +70,7 @@ def is_prime(n, k=5):
         return False
     if n <= 3:
         return True
+    # Checking if the number is even (except for 2, which is prime)
     if n % 2 == 0:
         return False
 
@@ -69,17 +80,26 @@ def is_prime(n, k=5):
         d //= 2
         r += 1
 
+# Repeating the Miller-Rabin primality test 'k' times
     for _ in range(k):
         a = random.randrange(2, n - 1)
+         # Computing 'x' as 'a' raised to the power of 'd' modulus 'n'
         x = pow(a, d, n)
+ # Checking if 'x' is corresponding to 1 or n - 1 (modulus 'n')
         if x == 1 or x == n - 1:
             continue
+# Repeat 'r - 1' times
         for _ in range(r - 1):
+# Update 'x' by squaring it modulus 'n'
             x = pow(x, 2, n)
+# Checking if 'x' is corresponding to n - 1 (modulus 'n')
             if x == n - 1:
                 break
         else:
+# If 'x' is not corresponding to n - 1 after 'r - 1' iterations, return False
             return False
+
+# If 'x' passes all 'k' tests, return True (indicating the number is likely prime)
     return True
 
 def auto_generated_public_exponent(eul):
@@ -93,11 +113,14 @@ def auto_generated_public_exponent(eul):
 
 def modular_inverse(e, eul):
     start_time = time.perf_counter()
+     # Compute the extended GCD to find the modular inverse
     gcd, x, _ = extend_gcd(e, eul)
     end_time = time.perf_counter()
     elapsed_time = (end_time - start_time) * 1000  # convert to milliseconds
     print(f"Time taken to calculate 'd': {elapsed_time} milliseconds")
+    # Check if 'e' and 'eul' are relatively prime (gcd = 1)
     if gcd == 1:
+        # Return the modular inverse of 'e' modulo 'eul'
         return x % eul
     else:
         raise ValueError("No modular inverse exists")
@@ -106,20 +129,25 @@ def modular_inverse(e, eul):
 def extend_gcd(a, b):
     s0, s1, t0, t1 = 1, 0, 0, 1
     while b:
+         # Computing the quotient and remainder of a divided by b
         q, a, b = a // b, b, a % b
         s0, s1 = s1, s0 - q * s1
         t0, t1 = t1, t0 - q * t1
+        # Return the GCD of 'a' and 'b', along with the final Bezout coefficients
     return a, s0, t0
 
 def encrypt(public_key, plaintext):
     e, n = public_key
+    # Checking if the plaintext message is too large for the given public key
     if plaintext >= n:
         raise ValueError("Message is too large for given public key.")
+    # Encrypting the plaintext message using modular exponentiation
     ciphertext = pow(plaintext, e, n)
     return ciphertext
 
 def decrypt(private_key, ciphertext):
     d, n = private_key
+ # Decrypt the ciphertext message using modular exponentiation
     plaintext = pow(ciphertext, d, n)
     return plaintext
 
@@ -133,11 +161,13 @@ try:
     message = int(input("Enter a message to encrypt (as an integer): "))
     encrypted_message = encrypt(public_key, message)
     decrypted_message = decrypt(private_key, encrypted_message)
+    print(f"Public Key: {public_key}")
+    print(f"Private Key: {private_key}")
     print(f"Original Message: {message}")
     print(f"Encrypted Message: {encrypted_message}")
     print(f"Decrypted Message: {decrypted_message}")
-    print(f"Public Key: {public_key}")
-    print(f"Private Key: {private_key}")
+    # print(f"Public Key: {public_key}")
+    # print(f"Private Key: {private_key}")
     
 except ValueError as err:
     print(err)
